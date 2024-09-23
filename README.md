@@ -11,7 +11,7 @@ python3 setup.py sdist bdist_wheel
 pip3 install .
 ```   
 ### Usage
-```ruby
+```python
 from pyhesdm.hestia_dm import Hestia_DM
 from pyhesdm.hestia_dm import NEDLVS_Tully_Halos
 ```
