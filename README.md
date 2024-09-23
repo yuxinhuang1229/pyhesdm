@@ -12,6 +12,6 @@ pip3 install .
 ```   
 ### Usage
 ```
-from dmcalc_pub.hestia_dm import Hestia_DM
-from dmcalc_pub.hestia_dm import NEDLVS_Tully_Halos
+from pyhesdm.hestia_dm import Hestia_DM
+from pyhesdm.hestia_dm import NEDLVS_Tully_Halos
 ```
