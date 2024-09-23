@@ -21,4 +21,5 @@ halos = NEDLVS_Tully_Halos()
 # calculate MW halo DM
 FRB20220319D = SkyCoord('02:08:42.7 +71:02:06.9', unit=['hourangle','deg'], frame='icrs')
 hesdm.get_mwhalo(FRB20220319D.galactic.l,FRB20220319D.galactic.b)
+>> 39.368945 pc/cm^3
 ```
