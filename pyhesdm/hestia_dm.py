@@ -114,14 +114,17 @@ class Hestia_DM:
         """
         pixel = self.galactic_to_healpix(lon, lat)
         dist_Mpc = source_dist.to(u.Mpc).value
-        dist_samples = np.arange(4,104,8)
+        dist_samples = np.arange(4,120,8)
         dm_samples = self.igm_model.iloc[pixel].to_numpy() * figm/0.8
         return np.interp(dist_Mpc, dist_samples, dm_samples)
     
     def get_dmigm(self, lon:u.Quantity, lat:u.Quantity, source_dist:u.Quantity=100*u.Mpc, figm=0.8):
         """
         Compute the DM_igm for multiple sightlines
+        source_dist should be within 3.4Mpc < source_dist < 116Mpc
         """
+        if (source_dist <= 3.4*u.Mpc) or (source_dist > 116*u.Mpc):
+            raise ValueError("Distance must be between 3.4Mpc and 116Mpc!")
         dmigm_list = []
         if lon.isscalar:
             lons = [lon]
@@ -224,7 +227,7 @@ class NEDLVS_Tully_Halos:
         Args:
             lon (u.Quantity): Longitude of the source
             lat (u.Quantity): Latitude of the source
-            source_dist: Distance from the source to the observer, 3.4Mpc < source_dist < 100Mpc
+            source_dist: Distance from the source to the observer, 3.4Mpc < source_dist < 116Mpc
             galaxy_model (ModifiedNFW, optional): Halo gas occupation model of galaxies. ModifiedNFW or any of
                 its child classes defined in frb.halos.models.
             cluster_model (ModifiedNFW, optional): Halo gas occupation model of clusters. ICM or any of
@@ -245,8 +248,8 @@ class NEDLVS_Tully_Halos:
             mean_dm_tot: Total DM halos
         """
         
-        if (source_dist <= 3.4*u.Mpc) or (source_dist > 100*u.Mpc):
-            raise ValueError("Distance must be between 3.4Mpc and 100Mpc!")
+        if (source_dist <= 3.4*u.Mpc) or (source_dist > 116*u.Mpc):
+            raise ValueError("Distance must be between 3.4Mpc and 116Mpc!")
         
         nedlvs_tab = self.nedlvs_tab.copy()
         tully_tab = self.tully_tab.copy()    
@@ -311,8 +314,8 @@ class NEDLVS_Tully_Halos:
         tully_cluster_centers = tully_tab[np.isin(tully_tab['pgc'], np.unique(tully_tab['1PGC']))]
         match_grps = tully_cluster_centers.copy()
         match_grps['ang_sep'] = ray_coord.separation(match_grps['coord']).to('arcmin')
-        match_grps['phys_sep'] = match_grps['D_v'].value*u.Mpc*np.sin(match_grps['ang_sep'].to('rad').value)
-        grps_infield = (match_grps['phys_sep']<5*u.Mpc)&(match_grps['ang_sep']<90*u.deg)&(match_grps['D_v']<source_dist.to('Mpc').value)
+        match_grps['phys_sep'] = match_grps['D_v'].value/self.cosmo.h*u.Mpc*np.sin(match_grps['ang_sep'].to('rad').value)
+        grps_infield = (match_grps['phys_sep']<5*u.Mpc)&(match_grps['ang_sep']<90*u.deg)&(match_grps['D_v'].value/self.cosmo.h<source_dist.to('Mpc').value)
         match_grps = match_grps[grps_infield]
 
         # Cross match with the tully cluster catalog
@@ -339,7 +342,7 @@ class NEDLVS_Tully_Halos:
                     grp_model = galaxy_model
                 else:
                     grp_model = cluster_model
-                central_entry['DM_halo'] = self.halo_dm(z=z_at_value(self.cosmo.luminosity_distance,central_entry['D_v']*u.Mpc),
+                central_entry['DM_halo'] = self.halo_dm(z=z_at_value(self.cosmo.luminosity_distance,central_entry['D_v']/self.cosmo.h*u.Mpc),
                                       offset=central_entry['phys_sep']*u.Mpc,
                                       log_mhalo=log_grp_mass, rmax=rmax, fhot=fhot,
                                       halo_model=grp_model)
