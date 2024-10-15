@@ -34,6 +34,7 @@ class Hestia_DM:
         self.model = pd.read_csv(model_csv)
         self.dwarfs = pd.read_csv(f'{os.path.dirname(__file__)}/dwarfs.csv')
         self.igm_model = pd.read_csv(f'{os.path.dirname(__file__)}/dmigm_layers_8Mpc.csv')
+        self.igm_std = pd.read_csv(f'{os.path.dirname(__file__)}/dmigm_std_layers_8Mpc.csv')
     
     def galactic_to_healpix(self, lon:u.Quantity, lat:u.Quantity):
         """
@@ -116,7 +117,8 @@ class Hestia_DM:
         dist_Mpc = source_dist.to(u.Mpc).value
         dist_samples = np.arange(4,120,8)
         dm_samples = self.igm_model.iloc[pixel].to_numpy() * figm/0.8
-        return np.interp(dist_Mpc, dist_samples, dm_samples)
+        dm_std_samples = self.igm_std.iloc[pixel].to_numpy() * figm/0.8
+        return np.interp(dist_Mpc, dist_samples, dm_samples), np.interp(dist_Mpc, dist_samples, dm_std_samples)
     
     def get_dmigm(self, lon:u.Quantity, lat:u.Quantity, source_dist:u.Quantity=100*u.Mpc, figm=0.8):
         """
@@ -126,6 +128,7 @@ class Hestia_DM:
         if (source_dist <= 3.4*u.Mpc) or (source_dist > 116*u.Mpc):
             raise ValueError("Distance must be between 3.4Mpc and 116Mpc!")
         dmigm_list = []
+        dmstd_list = []
         if lon.isscalar:
             lons = [lon]
             lats = [lat]
@@ -138,8 +141,10 @@ class Hestia_DM:
         else:
             dists = source_dist
         for l,b,dist in zip(lons,lats,dists):
-            dmigm_list.append(self.get_dmigm_1line(l,b,dist,figm=figm))
-        return dmigm_list * u.pc/(u.cm**3)
+            dmigm, dmstd = self.get_dmigm_1line(l,b,dist,figm=figm)
+            dmigm_list.append(dmigm)
+            dmstd_list.append(dmstd)
+        return dmigm_list * u.pc/(u.cm**3), dmstd_list * u.pc/(u.cm**3)
             
         
         
@@ -263,7 +268,7 @@ class NEDLVS_Tully_Halos:
         # Conditions for closeness
         #import pdb; pdb.set_trace() 
         valid_distances = nedlvs_tab['DistMpc']>0 # Weed out weird ones
-        distance_cut = nedlvs_tab['DistMpc']<source_dist.to('Mpc').value #Only need foreground objects
+        distance_cut = nedlvs_tab['DistMpc']<=source_dist.to('Mpc').value #Only need foreground objects
         local_grp_cut = nedlvs_tab['DistMpc']>3.4 # Exclude local group
         phys_sep_cut = nedlvs_tab['phys_sep']<1*u.Mpc # Impact param within 1 Mpc
         ang_sep_cut = nedlvs_tab['ang_sep']<90*u.deg # Make sure the earth is not between the FRB and the galaxy
@@ -280,8 +285,12 @@ class NEDLVS_Tully_Halos:
         
 
         if len(close_by_withmass)==0:
-            print(f"No local volume halos with mass found along this sightline (l={lon}, b={lat}, distance={source_dist}).")
-            return 0., 0., 0., 0.
+            if if_print:
+                print(f"No local volume halos with mass found along this sightline (l={lon}, b={lat}, distance={source_dist}).")
+            if full_output:
+                return 0.*u.pc/(u.cm**3), 0.*u.pc/(u.cm**3), 0.*u.pc/(u.cm**3), 0.*u.pc/(u.cm**3), Table(), Table()
+            else:
+                return 0.*u.pc/(u.cm**3)
             
         # Get DM estimates
         # Start with Mstar. Reduce by 0.3 dex for Salpeter to Chabrier IMF
