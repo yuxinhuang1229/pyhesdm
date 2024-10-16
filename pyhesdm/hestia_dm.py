@@ -130,21 +130,21 @@ class Hestia_DM:
         dmigm_list = []
         dmstd_list = []
         if lon.isscalar:
-            lons = [lon]
-            lats = [lat]
+            dmigm, dmstd = self.get_dmigm_1line(lon,lat,source_dist,figm=figm)
+            return dmigm*u.pc/(u.cm**3), dmstd*u.pc/(u.cm**3)
         else:
             lons = lon
             lats = lat
-        if type(source_dist)!=list:
-            dist_Mpc = source_dist.to(u.Mpc).value
-            dists = [dist_Mpc]*len(lons)*u.Mpc
-        else:
-            dists = source_dist
-        for l,b,dist in zip(lons,lats,dists):
-            dmigm, dmstd = self.get_dmigm_1line(l,b,dist,figm=figm)
-            dmigm_list.append(dmigm)
-            dmstd_list.append(dmstd)
-        return dmigm_list * u.pc/(u.cm**3), dmstd_list * u.pc/(u.cm**3)
+            if type(source_dist)!=list:
+                dist_Mpc = source_dist.to(u.Mpc).value
+                dists = [dist_Mpc]*len(lons)*u.Mpc
+            else:
+                dists = source_dist
+            for l,b,dist in zip(lons,lats,dists):
+                dmigm, dmstd = self.get_dmigm_1line(l,b,dist,figm=figm)
+                dmigm_list.append(dmigm)
+                dmstd_list.append(dmstd)
+            return np.array(dmigm_list) * u.pc/(u.cm**3), np.array(dmstd_list) * u.pc/(u.cm**3)
             
         
         
