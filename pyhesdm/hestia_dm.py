@@ -324,7 +324,7 @@ class NEDLVS_Tully_Halos:
         match_grps = tully_cluster_centers.copy()
         match_grps['ang_sep'] = ray_coord.separation(match_grps['coord']).to('arcmin')
         match_grps['phys_sep'] = match_grps['D_v'].value/self.cosmo.h*u.Mpc*np.sin(match_grps['ang_sep'].to('rad').value)
-        grps_infield = (match_grps['phys_sep']<5*u.Mpc)&(match_grps['ang_sep']<90*u.deg)&(match_grps['D_v'].value/self.cosmo.h<source_dist.to('Mpc').value)
+        grps_infield = (match_grps['phys_sep']<5*u.Mpc)&(match_grps['ang_sep']<90*u.deg)&(match_grps['D_v'].value/self.cosmo.h<=source_dist.to('Mpc').value)
         match_grps = match_grps[grps_infield]
 
         # Cross match with the tully cluster catalog
