@@ -1,12 +1,18 @@
 # pyhesdm
-*Local Universe Dispersion Measure Model Computed from HESTIA Simulation*    
+*Local Universe Dispersion Measure (DM) Model Computed from HESTIA Simulation*   
+
+This package a DM model for the local universe within 120 Mpc. This model is introduced in [Huang et al.](http://arxiv.org/abs/2410.22098)(2024).    
+
+This package is created to derive the DM contributed from a certain component given a Galactic coordinates. The components considered in this model include: the Milky Way disk, the Milky Way halo, the intra-group medium (IGrM), the intergalactic medium (IGM) and the halos. The DM model for the Milky Way disk, the Milky Way halo (D < 0.2 Mpc) and the IGrM (0.2 Mpc < D < 3.4 Mpc) are all-sky projected model, while the DM model for the IGM and halos (3.4 Mpc < D < 120 Mpc) are 3D spherical models.    
+
+The Milky Way disk DM model is the NE2001 model. If you require the NE2001 model in 3D and with higher resolution, please use [pygedm](https://github.com/FRBs/pygedm). The DM models for the Milky Way halo and the IGrM are computed from the HESTIA simulation ([Libeskind et al.](https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.2968L), 2020). The DM model for the IGM is computed based on the Hamlet reconstructed density field ([Valade et al.](https://ui.adsabs.harvard.edu/abs/2022MNRAS.513.5148V), 2022). The DM model for the galaxy and group halos are from the NEDLVS catalog (doi:[10.26132/NED8](https://catcopy.ipac.caltech.edu/dois/doi.php?id=10.26132/NED8)) and the 2MASS Galaxy Groups catalog ([Tully et al.](https://ui.adsabs.harvard.edu/abs/2015AJ....149..171T), 2015).   
 
 ### Download   
 ```
 git clone git@github.com:yuxinhuang1229/pyhesdm.git
 ```      
 ### Test installation   
-```setup.py``` automatically download NEDLVS catalog from its website. This catalog is used for calculating DM_halos  
+```setup.py``` automatically download NEDLVS catalog from its website. This catalog is used for calculating DM_halos.  
 ```
 python3 setup.py sdist bdist_wheel
 pip3 install .
@@ -39,6 +45,6 @@ halos.get_dmhalos(lon=virgo.galactic.l, lat=virgo.galactic.b)
 >> <DM_halos>_specz =  70.33314714677843 pc/cm^3
 >> <DM_halos>_photoz =  1.388183728209114 pc/cm^3
 >> <DM_halos>_grp =  55.07165041895517 pc/cm^3
->> 125.4048.27617 pc/cm^3
+>> 125.4048 pc/cm^3
 ```
 
