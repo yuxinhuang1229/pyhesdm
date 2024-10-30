@@ -1,9 +1,9 @@
 # pyhesdm
 *Local Universe Dispersion Measure (DM) Model Computed from HESTIA Simulation*   
 
-This package a DM model for the local universe within 120 Mpc. This model is introduced in [Huang et al.](http://arxiv.org/abs/2410.22098)(2024).    
+This package provides a Python interface to a DM model for the local universe within 120 Mpc, as introduced in [Huang et al.](http://arxiv.org/abs/2410.22098)(2024).    
 
-This package is created to derive the DM contributed from a certain component given a Galactic coordinates. The components considered in this model include: the Milky Way disk, the Milky Way halo, the intra-group medium (IGrM), the intergalactic medium (IGM) and the halos. The DM model for the Milky Way disk, the Milky Way halo (D < 0.2 Mpc) and the IGrM (0.2 Mpc < D < 3.4 Mpc) are all-sky projected model, while the DM model for the IGM and halos (3.4 Mpc < D < 120 Mpc) are 3D spherical models.    
+This package is designed to calculate the DM contribution from specific components for given Galactic coordinates. The model considers the following components: the Milky Way disk, the Milky Way halo, the intra-group medium (IGrM), the intergalactic medium (IGM), and the halos. The DM models for the Milky Way disk, Milky Way halo (D < 0.2 Mpc) and the IGrM (0.2 Mpc < D < 3.4 Mpc) are all-sky projected model, while the DM model for the IGM and halos (3.4 Mpc < D < 120 Mpc) are 3D spherical models.    
 
 The Milky Way disk DM model is the NE2001 model. If you require the NE2001 model in 3D and with higher resolution, please use [pygedm](https://github.com/FRBs/pygedm) (doi:[10.1017/pasa.2021.33](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/abstract)). The DM models for the Milky Way halo and the IGrM are computed from the HESTIA simulation ([Libeskind et al.](https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.2968L), 2020). The DM model for the IGM is computed based on the Hamlet reconstructed density field ([Valade et al.](https://ui.adsabs.harvard.edu/abs/2022MNRAS.513.5148V), 2022). The DM model for the galaxy and group halos are from the NEDLVS catalog (doi:[10.26132/NED8](https://catcopy.ipac.caltech.edu/dois/doi.php?id=10.26132/NED8)) and the 2MASS Galaxy Groups catalog ([Tully et al.](https://ui.adsabs.harvard.edu/abs/2015AJ....149..171T), 2015).   
 
