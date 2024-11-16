@@ -7,6 +7,17 @@ This package is designed to calculate the DM contribution from specific componen
 
 The Milky Way disk DM model is the NE2001 model. If you require the NE2001 model in 3D and with higher resolution, please use [pygedm](https://github.com/FRBs/pygedm) (doi:[10.1017/pasa.2021.33](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/abstract)). The DM models for the Milky Way halo and the IGrM are computed from the HESTIA simulation ([Libeskind et al.](https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.2968L), 2020). The DM model for the IGM is computed based on the Hamlet reconstructed density field ([Valade et al.](https://ui.adsabs.harvard.edu/abs/2022MNRAS.513.5148V), 2022). The DM model for the galaxy and group halos are from the NEDLVS catalog (doi:[10.26132/NED8](https://catcopy.ipac.caltech.edu/dois/doi.php?id=10.26132/NED8)) and the 2MASS Galaxy Groups catalog ([Tully et al.](https://ui.adsabs.harvard.edu/abs/2015AJ....149..171T), 2015).   
 
+### Requirements
+
+Before using this package, ensure that the following dependencies are installed:
+
+1. **[ne2001](https://pypi.org/project/ne2001/):**   
+   The NE2001 package provides a model for the Galactic electron density distribution. You can install it using pip:   
+
+   ```bash
+   pip install ne2001
+   ```
+
 ### Download   
 ```
 git clone git@github.com:yuxinhuang1229/pyhesdm.git
