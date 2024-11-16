@@ -9,7 +9,7 @@ The Milky Way disk DM model is the NE2001 model. If you require the NE2001 model
 
 ### Requirements
 
-Before using this package, ensure that the following dependencies are installed:
+Before using this package, ensure that the following packages are installed:
 
 1. [ne2001-0.0.1](https://pypi.org/project/ne2001/)   
 2. [dust_extinction-1.5](https://pypi.org/project/dust-extinction/)   
