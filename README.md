@@ -11,12 +11,13 @@ The Milky Way disk DM model is the NE2001 model. If you require the NE2001 model
 
 Before using this package, ensure that the following dependencies are installed:
 
-1. **[ne2001](https://pypi.org/project/ne2001/):**   
-   The NE2001 package provides a model for the Galactic electron density distribution. You can install it using pip:   
-
-   ```bash
-   pip install ne2001
-   ```
+1. [ne2001-0.0.1](https://pypi.org/project/ne2001/)   
+2. [dust_extinction-1.5](https://pypi.org/project/dust-extinction/)   
+3. [linetools-0.3.2](https://pypi.org/project/linetools/)
+4. [mwprop-1.0.10](https://github.com/stella-ocker/mwprop)
+5. [FRB](https://github.com/FRBs/FRB)   
+6. [importlib_resources](https://pypi.org/project/importlib-resources/)
+7. [healpy](https://pypi.org/project/healpy/)
 
 ### Download   
 ```
