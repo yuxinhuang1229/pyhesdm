@@ -155,6 +155,19 @@ class NEDLVS_Tully_Halos:
         self.cosmo = FlatLambdaCDM(H0=67.77, Om0=0.270, Tcmb0=2.725, Ob0=0.048)
         self.nedlvs_tab = self.get_nedlvs_tab(ned_file)
         self.tully_tab = self.get_tully_tab(tully_file)
+        self.mpch2z = self.dist2z_interp(cosmology=self.cosmo, num_points=100000)
+        
+    def dist2z_interp(self, cosmology, num_points): # Mpc/h to z
+        # Create a grid of redshift values
+        z_values = np.linspace(0, 0.1, num_points)  # Adjust the upper limit based on your needs
+
+        # Calculate the corresponding comoving distances for the given redshift grid
+        comoving_distances = cosmology.comoving_distance(z_values)
+
+        # Interpolation function: comoving distance (Mpc/h) -> redshift
+        interp_function = interp1d(comoving_distances.to(u.Mpc/cosmology.h).value, z_values, kind='linear', fill_value="extrapolate")
+
+        return interp_function
          
     def get_nedlvs_tab(self, ned_file):
         """
@@ -303,7 +316,7 @@ class NEDLVS_Tully_Halos:
         for num, (offset, distance) in enumerate(zip(close_by_withmass['phys_sep'], close_by_withmass['DistMpc'])):
             try:
                 if (close_by_withmass[num]['DistMpc_method'] == 'zIndependent') & (close_by_withmass[num]['z_tech']!='SPEC'):
-                    close_by_withmass[num]['z'] = z_at_value(self.cosmo.luminosity_distance, distance*u.Mpc)
+                    close_by_withmass[num]['z'] = self.mpch2z(distance*self.cosmo.h)
                 close_by_withmass[num]['log_mhalo'] = halomass_from_stellarmass(close_by_withmass[num]['log_mstar'], 
                                                                                 z=close_by_withmass[num]['z'])
                 hdm = self.halo_dm(z=close_by_withmass[num]['z'], 

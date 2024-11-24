@@ -19,7 +19,7 @@ setup(
     description='Local Universe Dispersion Measure Model Computed from HESTIA Simulation',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    author='Yuxin Huang, Khee-Gan Lee, Noam Libeskind, Sunil Simha and J. X. Prochaska',
+    author='Yuxin Huang, Khee-Gan Lee, Noam Libeskind, Sunil Simha, Aurélien Valade and J. X. Prochaska',
     author_email='mochafhxy@gmail.com',
     url='https://github.com/yuxinhuang1229/pyhesdm',
     packages=['pyhesdm'],
