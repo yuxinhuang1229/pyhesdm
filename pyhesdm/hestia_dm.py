@@ -364,7 +364,7 @@ class NEDLVS_Tully_Halos:
                     grp_model = galaxy_model
                 else:
                     grp_model = cluster_model
-                central_entry['DM_halo'] = self.halo_dm(z=z_at_value(self.cosmo.luminosity_distance,central_entry['D_v']/self.cosmo.h*u.Mpc),
+                central_entry['DM_halo'] = self.halo_dm(z=self.mpch2z(central_entry['D_v']),
                                       offset=central_entry['phys_sep']*u.Mpc,
                                       log_mhalo=log_grp_mass, rmax=rmax, fhot=fhot,
                                       halo_model=grp_model)
