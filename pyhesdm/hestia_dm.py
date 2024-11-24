@@ -115,7 +115,7 @@ class Hestia_DM:
         """
         pixel = self.galactic_to_healpix(lon, lat)
         dist_Mpc = source_dist.to(u.Mpc).value
-        dist_samples = np.arange(4,120,8)
+        dist_samples = np.hstack((np.arange(4,120,8),np.array([120])))
         dm_samples = self.igm_model.iloc[pixel].to_numpy() * figm/0.8
         dm_std_samples = self.igm_std.iloc[pixel].to_numpy() * figm/0.8
         return np.interp(dist_Mpc, dist_samples, dm_samples), np.interp(dist_Mpc, dist_samples, dm_std_samples)
@@ -123,10 +123,10 @@ class Hestia_DM:
     def get_dmigm(self, lon:u.Quantity, lat:u.Quantity, source_dist:u.Quantity=100*u.Mpc, figm=0.8):
         """
         Compute the DM_igm for multiple sightlines
-        source_dist should be within 3.4Mpc < source_dist < 116Mpc
+        source_dist should be within 3.4Mpc < source_dist < 120Mpc
         """
-        if (source_dist <= 3.4*u.Mpc) or (source_dist > 116*u.Mpc):
-            raise ValueError("Distance must be between 3.4Mpc and 116Mpc!")
+        if (source_dist <= 3.4*u.Mpc) or (source_dist > 120*u.Mpc):
+            raise ValueError("Distance must be between 3.4Mpc and 120Mpc!")
         dmigm_list = []
         dmstd_list = []
         if lon.isscalar:
@@ -245,7 +245,7 @@ class NEDLVS_Tully_Halos:
         Args:
             lon (u.Quantity): Longitude of the source
             lat (u.Quantity): Latitude of the source
-            source_dist: Distance from the source to the observer, 3.4Mpc < source_dist < 116Mpc
+            source_dist: Distance from the source to the observer, 3.4Mpc < source_dist < 120Mpc
             galaxy_model (ModifiedNFW, optional): Halo gas occupation model of galaxies. ModifiedNFW or any of
                 its child classes defined in frb.halos.models.
             cluster_model (ModifiedNFW, optional): Halo gas occupation model of clusters. ICM or any of
@@ -266,8 +266,8 @@ class NEDLVS_Tully_Halos:
             mean_dm_tot: Total DM halos
         """
         
-        if (source_dist <= 3.4*u.Mpc) or (source_dist > 116*u.Mpc):
-            raise ValueError("Distance must be between 3.4Mpc and 116Mpc!")
+        if (source_dist <= 3.4*u.Mpc) or (source_dist > 120*u.Mpc):
+            raise ValueError("Distance must be between 3.4Mpc and 120Mpc!")
         
         nedlvs_tab = self.nedlvs_tab.copy()
         tully_tab = self.tully_tab.copy()    
