@@ -32,7 +32,7 @@ pip3 install .
 ### Usage
 ```python
 from pyhesdm.hestia_dm import Hestia_DM
-from pyhesdm.hestia_dm import NEDLVS_Tully_Halos
+from pyhesdm.dmhalos import NEDLVS_Tully_Halos
 
 hesdm = Hestia_DM()
 halos = NEDLVS_Tully_Halos()
