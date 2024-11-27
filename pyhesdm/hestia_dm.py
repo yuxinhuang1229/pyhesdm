@@ -39,6 +39,13 @@ class Hestia_DM:
     def galactic_to_healpix(self, lon:u.Quantity, lat:u.Quantity):
         """
         Convert galactic latitude and longitude to HEALPix pixel number.
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            pixel (int or array of int): HEALPix pixel(s) corresponding to the given Galactic Longitude and Latitude.
         """
         theta = np.pi/2 - lat.to(u.radian).value  # convert latitude to colatitude
         phi = lon.to(u.radian).value         # convert longitude to radians
@@ -47,44 +54,84 @@ class Hestia_DM:
     
     def get_disk(self, lon:u.Quantity, lat:u.Quantity):
         """
-        Compute the disk DM from NE2001 model
+        Compute the disk DM from NE2001 model.
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            dm_ne2001 (astropy.units.Quantity): DM of the NE2001 component.
         """
         pixel = self.galactic_to_healpix(lon, lat)
-        return np.array(self.model.loc[pixel,'ne2001']) * u.pc/(u.cm**3)
+        dm_ne2001 = np.array(self.model.loc[pixel,'ne2001']) * u.pc/(u.cm**3)
+        return dm_ne2001
     
     def get_mwhalo(self, lon:u.Quantity, lat:u.Quantity):
         """
-        Compute the Milky Way halo DM from HESTIA simulation
+        Compute the Milky Way halo DM from HESTIA simulation.
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            dm_mwhalo (astropy.units.Quantity): DM of the Milky Way halo component.
         """
         pixel = self.galactic_to_healpix(lon, lat)
         self.in_dwarf_halo(lon, lat, dwarfs=[0,1])
-        return np.array(self.model.loc[pixel,'mw_halo']) * u.pc/(u.cm**3)
+        dm_mwhalo = np.array(self.model.loc[pixel,'mw_halo']) * u.pc/(u.cm**3)
+        return dm_mwhalo
     
     def get_lgigrm(self, lon:u.Quantity, lat:u.Quantity):
         """
-        Compute the Local Group intra-group medium DM from HESTIA simulation
+        Compute the Local Group intra-group medium DM from HESTIA simulation.
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            dm_lgigrm (astropy.units.Quantity): DM of the Local Group Intra-group Medium component.
         """
         pixel = self.galactic_to_healpix(lon, lat)
         self.in_dwarf_halo(lon, lat, dwarfs=[2,3])
-        return np.array(self.model.loc[pixel,'lg_igrm']) * u.pc/(u.cm**3)
+        dm_lgigrm = np.array(self.model.loc[pixel,'lg_igrm']) * u.pc/(u.cm**3)
+        return dm_lgigrm
     
     def get_mw(self, lon:u.Quantity, lat:u.Quantity):
         """
-        Compute the total Milky Way DM (DM_halo+DM_disk)
+        Compute the total Milky Way DM (DM_halo+DM_disk).
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            dm_mw (astropy.units.Quantity): DM of the Milky Way (including NE2001 and halo) component.
         """
         pixel = self.galactic_to_healpix(lon, lat)
         self.in_dwarf_halo(lon, lat, dwarfs=[0,1])
-        return (np.array(self.model.loc[pixel,'mw_halo']) 
+        dm_mw = (np.array(self.model.loc[pixel,'mw_halo']) 
                 + np.array(self.model.loc[pixel,'ne2001'])) * u.pc/(u.cm**3)
+        return dm_mw
     
     def get_lg(self, lon:u.Quantity, lat:u.Quantity):
         """
-        Compute the total Local Group DM (DM_halo+DM_disk+DM_igrm)
+        Compute the total Local Group DM (DM_halo+DM_disk+DM_igrm).
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+        Returns:
+            dm_lg (astropy.units.Quantity): DM of the Local Group (including NE2001, halo and Intra-group Medium) component.
         """
         pixel = self.galactic_to_healpix(lon, lat)
         self.in_dwarf_halo(lon, lat)
-        return (np.array(self.model.loc[pixel,'lg_igrm']) + np.array(self.model.loc[pixel,'mw_halo']) 
+        dm_lg = (np.array(self.model.loc[pixel,'lg_igrm']) + np.array(self.model.loc[pixel,'mw_halo']) 
                 + np.array(self.model.loc[pixel,'ne2001'])) * u.pc/(u.cm**3)
+        return dm_lg
     
     def in_dwarf_halo(self, lon:u.Quantity, lat:u.Quantity, dwarfs:list=[0,1,2,3]):
         """
@@ -112,6 +159,17 @@ class Hestia_DM:
     def get_dmigm_1line(self, lon:u.Quantity, lat:u.Quantity, source_dist:u.Quantity=100*u.Mpc, figm=0.8):
         """
         Compute the DM_igm for one sightline
+        source_dist should be within 3.4Mpc < source_dist < 120Mpc
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can only be a scalar.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can only be a scalar.
+            source_dist (astropy.units.Quantity, optional): Comoving distance of the source, provided as an Astropy Quantity. \
+            Can only be a scalar.
+            figm (float, optional): the fraction of cosmic baryons in IGM
+        Returns:
+            DM of the IGM component and its standard deviation calculated from all the realizations.
         """
         pixel = self.galactic_to_healpix(lon, lat)
         dist_Mpc = source_dist.to(u.Mpc).value
@@ -124,6 +182,16 @@ class Hestia_DM:
         """
         Compute the DM_igm for multiple sightlines
         source_dist should be within 3.4Mpc < source_dist < 120Mpc
+        Args: 
+            lon (astropy.units.Quantity): Galactic Longitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            lat (astropy.units.Quantity): Galactic Latitude of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            source_dist (astropy.units.Quantity, optional): Comoving distance of the source, provided as an Astropy Quantity. \
+            Can be a scalar or an array.
+            figm (float, optional): the fraction of cosmic baryons in IGM
+        Returns:
+            DM of the IGM component and its standard deviation calculated from all the realizations.
         """
         if (source_dist <= 3.4*u.Mpc) or (source_dist > 120*u.Mpc):
             raise ValueError("Distance must be between 3.4Mpc and 120Mpc!")
@@ -158,6 +226,10 @@ class NEDLVS_Tully_Halos:
         self.mpch2z = self.dist2z_interp(cosmology=self.cosmo, num_points=100000)
         
     def dist2z_interp(self, cosmology, num_points): # Mpc/h to z
+        """
+        Returns:
+        Interpolation function: comoving distance (Mpc/h) -> redshift
+        """
         # Create a grid of redshift values
         z_values = np.linspace(0, 0.1, num_points)  # Adjust the upper limit based on your needs
 
@@ -172,7 +244,7 @@ class NEDLVS_Tully_Halos:
     def get_nedlvs_tab(self, ned_file):
         """
         Returns:
-        nedlvs_tab (Table, optional): NED LVS catalog instance.
+        nedlvs_tab (Table): NED-LVS catalog with redshift distance re-calculated using pyhesdm cosmology.
         """
         nedlvs_tab = Table.read(ned_file)
         nedlvs_tab['coord'] = SkyCoord(nedlvs_tab['ra'], nedlvs_tab['dec'], unit="deg")
@@ -184,7 +256,7 @@ class NEDLVS_Tully_Halos:
     def get_tully_tab(self, tully_file):
         """
         Returns:
-        tully_tab (Table, optional): Tully Cluster catalog instance.
+        tully_tab (Table): Tully Cluster catalog.
         """
         tully_clusters = Table.from_pandas(pd.read_csv(tully_file))
         tully_clusters_coord = SkyCoord(tully_clusters['GLong']*u.deg, tully_clusters['GLat']*u.deg, frame="galactic")
@@ -257,13 +329,16 @@ class NEDLVS_Tully_Halos:
             full_output (bool, optional): If True, output all components of DM_halos and list galaxies and groups; 
                 else only print the final DM_halos.
         Returns:
-            mean_dm_halos_lvs (float): Mean value of DM_halos from galaxies with all the methods.
-            mean_dm_halos_lvs_spec (float): Mean value of DM_halos from galaxies with spec-zs and redshift-independent distances.
-            mean_dm_halos_lvs_phot (float): Mean value of DM_halos from galaxies with photo-z's and other methods.
-            mean_grp_dm (float): Mean value of DM_halos from the Tully cluster catalog.
-            close_by_withmass (Table): Table of galaxy halos within 1 Mpc having masses from the NED LVS.
-            match_grps (Table): Table of intersecting Tully Cluster catalog members. 
-            mean_dm_tot: Total DM halos
+            if full_output is True:
+                mean_dm_halos_lvs (float): Mean value of DM_halos from galaxies with all the methods.
+                mean_dm_halos_lvs_spec (float): Mean value of DM_halos from galaxies with spec-zs 
+                                                and redshift-independent distances.
+                mean_dm_halos_lvs_phot (float): Mean value of DM_halos from galaxies with photo-z's and other methods.
+                mean_grp_dm (float): Mean value of DM_halos from the Tully cluster catalog.
+                close_by_withmass (Table): Table of galaxy halos within 1 Mpc having masses from the NED LVS.
+                match_grps (Table): Table of intersecting Tully Cluster catalog members. 
+            if full_output is False:
+                mean_dm_tot: Total DM halos (mean_dm_halos_lvs_spec+mean_grp_dm)
         """
         
         if (source_dist <= 3.4*u.Mpc) or (source_dist > 120*u.Mpc):
